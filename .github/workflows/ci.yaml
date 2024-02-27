@@ -18,12 +18,12 @@ jobs:
     strategy:
       matrix:
         goos: [linux, windows]
-        artifact_name: [licencias, licencias.exe]
+        artifact_name: [sumatorio, sumatorio.exe]
         exclude:
         - goos: linux
-          artifact_name: licencias.exe
+          artifact_name: sumatorio.exe
         - goos: windows
-          artifact_name: licencias
+          artifact_name: sumatorio
 
     steps:
       - uses: actions/checkout@v4
