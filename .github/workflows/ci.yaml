@@ -1,0 +1,43 @@
+name: Build Test Scan and Publish
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+# Don't run multiple releases concurrently.
+concurrency: release
+
+jobs:  
+  upload-artifact:
+    name: Upload ${{ matrix.arch }} artifacts
+    # needs: [scan-image]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        goos: [linux, windows]
+        artifact_name: [licencias, licencias.exe]
+        exclude:
+        - goos: linux
+          artifact_name: licencias.exe
+        - goos: windows
+          artifact_name: licencias
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build binary
+        run: |
+          CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=amd64 go build -o ${{ matrix.artifact_name }}
+      - name: Upload binaries to release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Release"
+          body: "Nueva version"
+          draft: false
+          prerelease: false
+          tag_name: latest
+          files: |
+            ./${{ matrix.artifact_name }}
